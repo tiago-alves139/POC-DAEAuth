@@ -24,7 +24,7 @@ export default async function EditDevice({ params }) {
   return (
   <>
     <h1>Edit Device</h1>
-    <EditDeviceForm deviceId={deviceId} title={title} description={description} />
+    <EditDeviceForm id={deviceId} title={title} description={description} />
   </>
   );
 }

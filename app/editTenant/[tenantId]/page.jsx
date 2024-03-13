@@ -22,15 +22,14 @@ export default async function EditTenant({ params }) {
   const { tenantId } = params;
   const { tenant } = await getTenantById(tenantId);
   const { title, description } = tenant;
-  console.log("TenantId: " + tenantId);
   return (
   <>
   <h1>Edit Tenant</h1>
-    {/*<EditTenantForm id={tenantId} title={title} description={description} />*/}
+    <EditTenantForm id={tenantId} title={title} description={description} />
     <br></br>
-    {<AssetGroupsList tenantId={tenantId}/>}
+    <AssetGroupsList tenantId={tenantId}/>
     <br></br>
-    {/*<AddAssetGroup tenantId={tenantId}/>*/}
+    <AddAssetGroup tenantId={tenantId}/>
   </>
   );
 }

@@ -1,9 +1,6 @@
-"use client";
-
 import Link from "next/link";
 import RemoveBtn from "./RemoveBtnAssetGroup";
 import { HiPencilAlt } from "react-icons/hi";
-import { useState, useEffect } from "react";
 
 const getAssetGroups = async (id) => {
   try {
@@ -22,19 +19,7 @@ const getAssetGroups = async (id) => {
 };
 
 export default async function AssetGroupsList({tenantId}) {
-  const [assetGroups, setAssetGroups] = useState([]);
-  const [currentTenantId] = useState(tenantId);
-
-  console.log("TENANT_ID: " + tenantId);
-  const getAndSetAssetGroups = async () => {
-    console.log("AQUI!");
-    var result = await getAssetGroups(tenantId);
-    console.log("RESULT: " + result);
-    setAssetGroups(result);
-  };
-  // useEffect(() => {
-  //   getAndSetAssetGroups();
-  // }, [currentTenantId]);
+  const { assetGroups } = await getAssetGroups(tenantId);
 
   return (
     <>

@@ -20,7 +20,6 @@ export async function GET(request, { params }) {
 
 export async function GET_Devices(request, { params }) {
   const { id } = params;
-  console.log("ROUTE GET ASSET GROUP DEVICES!!!!");
   await connectMongoDB();
   const devices = await Device.find({ assetGroupId: id });
   return NextResponse.json({ assetGroups: devices });

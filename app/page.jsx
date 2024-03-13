@@ -7,7 +7,7 @@ export default function Home() {
   <>
     <h1>Tenants</h1>
     <br></br>
-    {/*<AddTenant />*/}
+    <AddTenant />
     <br/>
     <TenantsList />
   </>
