@@ -18,8 +18,11 @@ const getTenants = async () => {
   }
 };
 
-export default async function TenantsList() {
-  const { tenants } = await getTenants();
+export default function TenantsList() {
+  const { tenants } = { tenants: [] };
+  
+  console.log(tenants);
+  
 
   return (
     <>

@@ -1,41 +1,10 @@
-"use client";
-
 import Link from "next/link";
 import RemoveBtn from "./RemoveBtnAssetGroup";
 import { HiPencilAlt } from "react-icons/hi";
-import { useState, useEffect } from "react";
 
-const getAssetGroups = async (id) => {
-  try {
-    const res = await fetch(`http://localhost:3000/api/tenants/${id}/assetgroups`, {
-      cache: "no-store",
-    });
-
-    if (!res.ok) {
-      throw new Error("Failed to fetch assetGroups");
-    }
-
-    return res.json();
-  } catch (error) {
-    console.log("Error loading assetGroups: ", error);
-  }
-};
-
-export default async function AssetGroupsList({tenantId}) {
-  const [assetGroups, setAssetGroups] = useState([]);
-  const [currentTenantId] = useState(tenantId);
-
-  console.log("TENANT_ID: " + tenantId);
-  const getAndSetAssetGroups = async () => {
-    console.log("AQUI!");
-    var result = await getAssetGroups(tenantId);
-    console.log("RESULT: " + result);
-    setAssetGroups(result);
-  };
-  // useEffect(() => {
-  //   getAndSetAssetGroups();
-  // }, [currentTenantId]);
-
+export default function AssetGroupsList({ assetGroups }) {
+  
+  console.log(assetGroups);
   return (
     <>
     <h1>Asset Groups List</h1>

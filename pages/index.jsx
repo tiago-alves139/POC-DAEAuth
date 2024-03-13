@@ -1,13 +1,12 @@
 import TenantsList from "@/components/TenantList";
-import { Adamina } from "next/font/google";
-import AddTenant from "./addTenant/page";
+import AddTenant from "./addTenant/index";
 
 export default function Home() {
   return (
   <>
     <h1>Tenants</h1>
     <br></br>
-    {/*<AddTenant />*/}
+    <AddTenant />
     <br/>
     <TenantsList />
   </>

@@ -1,6 +1,6 @@
 import EditAssetGroupForm from "@/components/EditAssetGroupForm";
 import DeviceList from "@/components/DeviceList";
-import AddDevice from "@/app/addDevice/page";
+import AddDevice from "@/pages/addDevice/index";
 
 const getAssetGroupById = async (id) => {
   try {

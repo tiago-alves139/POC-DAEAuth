@@ -14,6 +14,7 @@ export async function POST(request) {
 export async function GET() {
   await connectMongoDB();
   const tenants = await Tenant.find();
+  console.log("api tenants get" + tenants);
   return NextResponse.json({ tenants });
 }
 

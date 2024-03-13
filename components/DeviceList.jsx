@@ -21,7 +21,7 @@ const getDevices = async (assetGroupId) => {
 };
 
 export default async function DevicesList({assetGroupId}) {
-  const { devices } = await getDevices(assetGroupId);
+  const { devices } = { devices: []};//await getDevices(assetGroupId);
 
   return (
     <>
