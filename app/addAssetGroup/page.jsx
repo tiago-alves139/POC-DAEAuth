@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
-export default function AddTopic() {
+export default function AddAssetGroup({tenantId}) {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
 
@@ -18,18 +18,21 @@ export default function AddTopic() {
     }
 
     try {
-      const res = await fetch("http://localhost:3000/api/topics", {
+      const res = await fetch("http://localhost:3000/api/assetgroups", {
+        next: {tags: ["assetGroupList"]},
         method: "POST",
         headers: {
           "Content-type": "application/json",
         },
-        body: JSON.stringify({ title, description }),
+        body: JSON.stringify({ title, description, tenantId }),
       });
 
       if (res.ok) {
-        router.push("/");
+        router.refresh();
+        setTitle("");
+        setDescription("");
       } else {
-        throw new Error("Failed to create a topic");
+        throw new Error("Failed to create a assetGroup");
       }
     } catch (error) {
       console.log(error);
@@ -37,13 +40,15 @@ export default function AddTopic() {
   };
 
   return (
+    <>
+    <h1>Add New Asset Group</h1>
     <form onSubmit={handleSubmit} className="flex flex-col gap-3">
       <input
         onChange={(e) => setTitle(e.target.value)}
         value={title}
         className="border border-slate-500 px-8 py-2"
         type="text"
-        placeholder="Topic Title"
+        placeholder="AssetGroup Title"
       />
 
       <input
@@ -51,15 +56,16 @@ export default function AddTopic() {
         value={description}
         className="border border-slate-500 px-8 py-2"
         type="text"
-        placeholder="Topic Description"
+        placeholder="AssetGroup Description"
       />
 
       <button
         type="submit"
         className="bg-green-600 font-bold text-white py-3 px-6 w-fit"
       >
-        Add Topic
+        Add AssetGroup
       </button>
     </form>
+    </>
   );
 }

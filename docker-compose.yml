@@ -1,0 +1,34 @@
+version: '3'
+
+services:
+  mongodb:
+    image: mongo
+    container_name: mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+  daeauthentication:
+    image: nexus-docker.cogz.online/dae-authentication
+    environment:
+      - KC_DB=postgres
+      - KC_DB_URL=jdbc:postgresql://postgresql/keycloak
+      - KC_DB_USERNAME=admin
+      - KC_DB_PASSWORD=dae
+      - KC_HOSTNAME=localhost
+      - KEYCLOAK_ADMIN=admin
+      - KEYCLOAK_ADMIN_PASSWORD=dae
+    ports:
+      - 8080:8080
+    depends_on:
+      - postgresql
+  postgresql:
+    image: postgres:15
+    environment:
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=dae
+      - POSTGRES_DB=keycloak
+    ports:
+      - 5432:5432
+volumes:
+  mongodb_data:
