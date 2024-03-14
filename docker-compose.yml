@@ -9,7 +9,7 @@ services:
     volumes:
       - mongodb_data:/data/db
   daeauthentication:
-    image: nexus-docker.cogz.online/dae-authentication
+    image: nexus-docker.cogz.online/dae-authentication:1.3.0
     environment:
       - KC_DB=postgres
       - KC_DB_URL=jdbc:postgresql://postgresql/keycloak

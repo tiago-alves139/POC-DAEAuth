@@ -2,32 +2,16 @@ import Link from "next/link";
 import RemoveBtn from "./RemoveBtnTenant";
 import { HiPencilAlt } from "react-icons/hi";
 
-const getTenants = async () => {
-  try {
-    const res = await fetch("http://localhost:3000/api/tenants", {
-      cache: "no-store",
-    });
-
-    if (!res.ok) {
-      throw new Error("Failed to fetch tenants");
-    }
-
-    return res.json();
-  } catch (error) {
-    console.log("Error loading tenants: ", error);
-  }
-};
-
-export default async function TenantsList() {
-  const { tenants } = await getTenants();
-
+export default function TenantsList({tenants}) {
+  console.log("TENANTS LIST: " + tenants);
+  console.log(tenants);
   return (
     <>
-      <h1>Tenants List</h1>
+      <h2 className="font-bold text-2xl text-center">Tenants List</h2>
       {tenants.map((t) => (
         <div
           key={t._id}
-          className="p-4 border border-slate-300 my-3 flex justify-between gap-5 items-start"
+          className="rounded p-4 border border-slate-300 my-3 flex justify-between gap-5 items-start"
         >
           <div>
             <h2 className="font-bold text-2xl">{t.title}</h2>
