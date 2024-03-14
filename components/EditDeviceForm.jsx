@@ -37,7 +37,7 @@ export default function EditDeviceForm({ id, title, description }) {
       <input
         onChange={(e) => setNewTitle(e.target.value)}
         value={newTitle}
-        className="border border-slate-500 px-8 py-2"
+        className="rounded border border-slate-500 px-8 py-2"
         type="text"
         placeholder="Device Title"
       />
@@ -45,12 +45,12 @@ export default function EditDeviceForm({ id, title, description }) {
       <input
         onChange={(e) => setNewDescription(e.target.value)}
         value={newDescription}
-        className="border border-slate-500 px-8 py-2"
+        className="rounded border border-slate-500 px-8 py-2"
         type="text"
         placeholder="Device Description"
       />
 
-      <button className="bg-green-600 font-bold text-white py-3 px-6 w-fit">
+      <button className="rounded bg-green-600 font-bold text-white py-3 px-6 w-fit hover:bg-blue-700 transition-colors duration-200 mx-auto">
         Update Device
       </button>
     </form>

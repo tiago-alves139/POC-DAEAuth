@@ -41,12 +41,12 @@ export default function AddTenant() {
 
   return (
     <>
-    <h1>Add New Tenant</h1>
+    <h2 className="font-bold text-2xl text-center mb-4">Create New Tenant</h2>
     <form onSubmit={handleSubmit} className="flex flex-col gap-3">
       <input
         onChange={(e) => setTitle(e.target.value)}
         value={title}
-        className="border border-slate-500 px-8 py-2"
+        className="rounded border border-slate-500 px-8 py-2"
         type="text"
         placeholder="Tenant Title"
       />
@@ -54,16 +54,16 @@ export default function AddTenant() {
       <input
         onChange={(e) => setDescription(e.target.value)}
         value={description}
-        className="border border-slate-500 px-8 py-2"
+        className="rounded border border-slate-500 px-8 py-2"
         type="text"
         placeholder="Tenant Description"
       />
 
       <button
         type="submit"
-        className="bg-green-600 font-bold text-white py-3 px-6 w-fit"
+        className="rounded bg-green-600 font-bold text-white py-3 px-6 w-fit hover:bg-blue-700 transition-colors duration-200 mx-auto"
       >
-        Add Tenant
+        Create Tenant
       </button>
     </form>
     </>

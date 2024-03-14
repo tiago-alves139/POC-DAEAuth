@@ -24,7 +24,7 @@ export default async function EditTenant({ params }) {
   const { title, description } = tenant;
   return (
   <>
-  <h1>Edit Tenant</h1>
+  <h1 className="font-bold text-4xl text-center mb-4">{title}</h1>
     <EditTenantForm id={tenantId} title={title} description={description} />
     <br></br>
     <AssetGroupsList tenantId={tenantId}/>
