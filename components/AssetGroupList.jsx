@@ -1,6 +1,5 @@
-import Link from "next/link";
-import RemoveBtn from "./RemoveBtnAssetGroup";
-import { HiPencilAlt } from "react-icons/hi";
+import List from "./List";
+import ListCard from "./ListCard";
 
 const getAssetGroups = async (id) => {
   try {
@@ -22,26 +21,10 @@ export default async function AssetGroupsList({tenantId}) {
   const { assetGroups } = await getAssetGroups(tenantId);
 
   return (
-    <>
-    <h2 className="font-bold text-2xl text-center">Asset Groups List</h2>
-      {assetGroups.map((t) => (
-        <div
-          key={t._id}
-          className="rounded p-4 border border-slate-300 my-3 flex justify-between gap-5 items-start"
-        >
-          <div>
-            <h2 className="font-bold text-2xl">{t.title}</h2>
-            <div>{t.description}</div>
-          </div>
-
-          <div className="flex gap-2">
-            <RemoveBtn id={t._id} />
-            <Link href={`${tenantId}/editAssetGroup/${t._id}`}>
-              <HiPencilAlt size={24} />
-            </Link>
-          </div>
-        </div>
+    <List title="Asset Groups List">
+      {assetGroups.map((assetGroup) => (
+        <ListCard id={assetGroup._id} title={assetGroup.title} description={assetGroup.description} editUrl={`${tenantId}/editAssetGroup/${assetGroup._id}`} deleteUrl={`assetGroups?id=${assetGroup._id}`} />
       ))}
-    </>
+    </List>
   );
 }

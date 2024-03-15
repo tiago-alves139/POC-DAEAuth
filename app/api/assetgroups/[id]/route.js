@@ -2,12 +2,14 @@ import connectMongoDB from "@/libs/mongodb";
 import AssetGroup from "@/models/assetgroup";
 import Device from "@/models/device";
 import { NextResponse } from "next/server";
+import { updateClientAuthorizationResource } from "../../auth/[...nextauth]/resourceClient";
 
 export async function PUT(request, { params }) {
   const { id } = params;
   const { newTitle: title, newDescription: description } = await request.json();
   await connectMongoDB();
   await AssetGroup.findByIdAndUpdate(id, { title, description });
+  await updateClientAuthorizationResource(id, title, description);
   return NextResponse.json({ message: "AssetGroup updated" }, { status: 200 });
 }
 

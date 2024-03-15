@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import ButtonGeneric from "./ButtonGeneric";
 
 export default function EditAssetGroupForm({ id, title, description }) {
   const [newTitle, setNewTitle] = useState(title);
@@ -33,7 +34,7 @@ export default function EditAssetGroupForm({ id, title, description }) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-3">
+    <form onSubmit={handleSubmit} className="max-w-xl flex flex-col gap-3">
       <input
         onChange={(e) => setNewTitle(e.target.value)}
         value={newTitle}
@@ -50,9 +51,8 @@ export default function EditAssetGroupForm({ id, title, description }) {
         placeholder="AssetGroup Description"
       />
 
-      <button className="rounded bg-green-600 font-bold text-white py-3 px-6 w-fit hover:bg-blue-700 transition-colors duration-200 mx-auto">
-        Update AssetGroup
-      </button>
+      <ButtonGeneric title="Update AssetGroup">
+      </ButtonGeneric>
     </form>
   );
 }

@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import Logout from './Logout';
 
 export default function Breadcrumb() {
   const pathname = usePathname();
@@ -43,11 +44,12 @@ export default function Breadcrumb() {
           return (
             <li key={segment} className="flex items-center">
               {index > 0 && <span className="mx-3">|</span>}
-              <Link className="px-1 py-1 bg-green-300 text-black rounded hover:bg-blue-700 transition-colors duration-200" href={segment}>{linkWord}</Link>
+              <Link className="px-1 py-1 font-bold bg-green-300 text-black rounded hover:bg-blue-700 transition-colors duration-200" href={segment}>{linkWord}</Link>
             </li>
           );
         })}
       </ol>
+      <div className='mr-2'><Logout /> </div>
     </nav>
   );
 };

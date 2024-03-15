@@ -1,6 +1,5 @@
-import Link from "next/link";
-import RemoveBtn from "./RemoveBtnTenant";
-import { HiPencilAlt } from "react-icons/hi";
+import ListCard from "./ListCard";
+import List from "./List";
 
 const getTenants = async () => {
   try {
@@ -22,26 +21,10 @@ export default async function TenantsList() {
   const { tenants } = await getTenants();
 
   return (
-    <>
-      <h2 className="font-bold text-2xl text-center">Tenants List</h2>
-      {tenants.map((t) => (
-        <div
-          key={t._id}
-          className="rounded p-4 border border-slate-300 my-3 flex justify-between gap-5 items-start"
-        >
-          <div>
-            <h2 className="font-bold text-2xl">{t.title}</h2>
-            <div>{t.description}</div>
-          </div>
-
-          <div className="flex gap-2">
-            <RemoveBtn id={t._id} />
-            <Link href={`/editTenant/${t._id}`}>
-              <HiPencilAlt size={24} />
-            </Link>
-          </div>
-        </div>
+    <List title="Tenants List">
+      {tenants.map((tenant) => (
+        <ListCard id={tenant._id} title={tenant.title} description={tenant.description} editUrl={`editTenant/${tenant._id}`} deleteUrl={`tenants?id=${tenant._id}`} />
       ))}
-    </>
+    </List>
   );
 }

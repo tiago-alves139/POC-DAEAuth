@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import ButtonGeneric from "../../components/ButtonGeneric";
 
 export default function AddDevice({assetGroupId}) {
   const [title, setTitle] = useState("");
@@ -41,8 +42,8 @@ export default function AddDevice({assetGroupId}) {
 
   return (
     <>
-    <h2 className="font-bold text-2xl text-center mb-4">Create New Device</h2>
-    <form onSubmit={handleSubmit} className="flex flex-col gap-3">
+    <h2 className="font-bold text-2xl mb-4">Create New Device</h2>
+    <form onSubmit={handleSubmit} className="max-w-xl flex flex-col gap-3">
       <input
         onChange={(e) => setTitle(e.target.value)}
         value={title}
@@ -59,12 +60,7 @@ export default function AddDevice({assetGroupId}) {
         placeholder="Device Description"
       />
 
-      <button
-        type="submit"
-        className="rounded bg-green-600 font-bold text-white py-3 px-6 w-fit hover:bg-blue-700 transition-colors duration-200 mx-auto"
-      >
-        Create Device
-      </button>
+      <ButtonGeneric title="Create Device"/>
     </form>
     </>
   );

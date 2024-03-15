@@ -1,12 +1,14 @@
 import connectMongoDB from "@/libs/mongodb";
 import Device from "@/models/device";
 import { NextResponse } from "next/server";
+import { updateClientAuthorizationResource } from "../../auth/[...nextauth]/resourceClient";
 
 export async function PUT(request, { params }) {
   const { id } = params;
   const { newTitle: title, newDescription: description } = await request.json();
   await connectMongoDB();
   await Device.findByIdAndUpdate(id, { title, description });
+  await updateClientAuthorizationResource(id, title, description);
   return NextResponse.json({ message: "Device updated" }, { status: 200 });
 }
 

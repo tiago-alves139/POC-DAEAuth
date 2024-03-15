@@ -3,13 +3,13 @@
 import { HiOutlineTrash } from "react-icons/hi";
 import { useRouter } from "next/navigation";
 
-export default function RemoveBtn({ id }) {
+export default function RemoveBtn({ url }) {
   const router = useRouter();
-  const removeAssetGroup = async () => {
+  const removeResource = async () => {
     const confirmed = confirm("Are you sure?");
 
     if (confirmed) {
-      const res = await fetch(`http://localhost:3000/api/assetgroups?id=${id}`, {
+      const res = await fetch(`http://localhost:3000/${url}`, {
         method: "DELETE",
       });
 
@@ -20,7 +20,7 @@ export default function RemoveBtn({ id }) {
   };
 
   return (
-    <button onClick={removeAssetGroup} className="text-red-400">
+    <button onClick={removeResource} className="text-red-400">
       <HiOutlineTrash size={24} />
     </button>
   );

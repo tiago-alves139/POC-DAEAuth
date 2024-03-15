@@ -23,7 +23,7 @@ export default async function EditDevice({ params }) {
 
   return (
   <>
-    <h1 className="font-bold text-4xl text-center mb-4">{title}</h1>
+    <h1 className="font-bold text-4xl mb-4">{title}</h1>
     <EditDeviceForm id={deviceId} title={title} description={description} />
   </>
   );

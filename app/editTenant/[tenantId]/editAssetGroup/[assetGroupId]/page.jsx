@@ -25,7 +25,7 @@ export default async function EditAssetGroup({ params }) {
 
   return (
   <>
-  <h1 className="font-bold text-4xl text-center mb-4">{title}</h1>
+  <h1 className="font-bold text-4xl mb-4">{title}</h1>
     <EditAssetGroupForm id={assetGroupId} title={title} description={description} />
     <br></br>
     <DeviceList assetGroupId={assetGroupId}/>
