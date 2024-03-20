@@ -40,9 +40,17 @@ export const authOptions = {
             // overrides the settings in NextAuth.session
             token.exp = account.expires_at;
             token.id_token = account.id_token;
+            token.accessToken = account.access_token;
         }
-
         return token;
+    }, 
+    session: async ({ session, token }) => {
+        // copy the expiry from the original keycloak token
+        // overrides the settings in NextAuth.session
+        session.expires = token.exp;
+        session.id_token = token.id_token;
+        session.accessToken = token.accessToken;
+        return session;
     }
   },
   events: {

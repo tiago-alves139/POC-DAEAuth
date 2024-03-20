@@ -4,9 +4,10 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import ButtonGeneric from "./ButtonGeneric";
 
-export default function EditTenantForm({ id, title, description }) {
+export default function EditTenantForm({ id, title, description, accessToken }) {
   const [newTitle, setNewTitle] = useState(title);
   const [newDescription, setNewDescription] = useState(description);
+  
 
   const router = useRouter();
 
@@ -17,6 +18,7 @@ export default function EditTenantForm({ id, title, description }) {
       const res = await fetch(`http://localhost:3000/api/tenants/${id}`, {
         method: "PUT",
         headers: {
+          Authorization: `Bearer ${accessToken}`,
           "Content-type": "application/json",
         },
         body: JSON.stringify({ newTitle, newDescription }),

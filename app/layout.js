@@ -5,6 +5,7 @@ import Login from "@/components/Login";
 import Logout from "@/components/Logout";
 import { getServerSession } from 'next-auth'
 import { authOptions } from './api/auth/[...nextauth]/route'
+import { getSession } from "next-auth/react";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -15,9 +16,6 @@ export const metadata = {
 
 export default async function RootLayout({ children }) {
   const session = await getServerSession(authOptions);
-  console.log("AUTH OPTIONS: " + authOptions);
-  console.log(authOptions);
-  console.log("SESSION: " + session);
 
   if (session) {
     return (

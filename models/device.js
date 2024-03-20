@@ -2,6 +2,7 @@ import mongoose, { Schema } from "mongoose";
 
 const DeviceSchema = new Schema(
   {
+    _id: String,
     title: String,
     description: String,
     assetGroupId: String,

@@ -1,5 +1,4 @@
 const axios = require('axios');
-import { nullable } from 'zod';
 import { setAccessToken, getAccessToken } from './config';
 
 // Keycloak configuration
@@ -20,10 +19,6 @@ async function authenticate() {
         client_id: keycloakConfig.resource,
         client_secret: keycloakConfig.credentials.secret
       }));
-      
-      console.log('Response Data: ', response.data);
-      console.log('Authenticated with Keycloak: ', response.data.access_token);
-      console.log("SetAccessToken: " + setAccessToken);
       
       setAccessToken(response.data.access_token); // Store the access token
     } catch (error) {
@@ -56,7 +51,7 @@ export async function createTenantResource(id, name, displayName) {
 export async function createAssetGroupResource(id, name, displayName, parentId) {
     try{
         let resourceType = "AssetGroup";
-        let uris = ["/tenants"];
+        let uris = ["/assetgroups"];
         let roles = {
             "iotmanager": ["read"],
             "facilitymanager": ["write"]
@@ -76,7 +71,7 @@ export async function createAssetGroupResource(id, name, displayName, parentId) 
 export async function createDeviceResource(id, name, displayName, parentId) {
     try{
         let resourceType = "Device";
-        let uris = ["/tenants"];
+        let uris = ["/devices"];
         let roles = {
             "iotmanager": ["read"],
             "facilitymanager": ["write"]
@@ -95,7 +90,6 @@ export async function createDeviceResource(id, name, displayName, parentId) {
 async function createClientAuthorizationResource(id, name, displayName, type, uris, roles, scopes, parentId) {
     await authenticate(); // Authenticate with Keycloak
     const token = getAccessToken(); // Get the stored access token
-    console.log('Access token:', token);
 
     if (!token) {
       console.error('Access token not found. Please authenticate first.');
@@ -103,7 +97,6 @@ async function createClientAuthorizationResource(id, name, displayName, type, ur
     }
     try {
       let url = `${keycloakConfig["auth-server-url"]}/realms/${keycloakConfig.realm}/resource-server/${keycloakConfig.resource}/resource`;
-      console.log('URL:', url);
       const response = await axios.post(url, 
         {
             id: id,
@@ -133,7 +126,6 @@ async function createClientAuthorizationResource(id, name, displayName, type, ur
 export async function deleteClientAuthorizationResource(id) {
     await authenticate(); // Authenticate with Keycloak
     const token = getAccessToken(); // Get the stored access token
-    console.log('Access token:', token);
 
     if (!token) {
       console.error('Access token not found. Please authenticate first.');
@@ -161,7 +153,6 @@ export async function deleteClientAuthorizationResource(id) {
 export async function updateClientAuthorizationResource(id, name, displayName) {
     await authenticate(); // Authenticate with Keycloak
     const token = getAccessToken(); // Get the stored access token
-    console.log('Access token:', token);
 
     if (!token) {
       console.error('Access token not found. Please authenticate first.');
@@ -194,3 +185,216 @@ export async function updateClientAuthorizationResource(id, name, displayName) {
     }
 }
 
+export async function getAuthorizationResource(id) {
+    await authenticate(); // Authenticate with Keycloak
+    const token = getAccessToken(); // Get the stored access token
+
+    if (!token) {
+      console.error('Access token not found. Please authenticate first.');
+      return;
+    }
+    try {
+      let url = `${keycloakConfig["auth-server-url"]}/realms/${keycloakConfig.realm}/resource-server/${keycloakConfig.resource}/resource/${id}`;
+      const response = await axios.get(url, 
+        {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        }
+      );
+      return response.data;
+      
+    } catch (error) {
+      console.error('Error getting client authorization resource:', error.message);
+      return error;
+    }
+}
+
+export async function getUserResourcesByType(userAccesstoken, type){
+    if (!userAccesstoken) {
+      console.error('User Access token not found. Please authenticate first.');
+      return;
+    }
+    try {
+      let url = `${keycloakConfig["auth-server-url"]}/realms/${keycloakConfig.realm}/protocol/openid-connect/token`;
+      console.log('URL:', url);
+      const response = await axios.post(url,
+        {
+          audience: 'resource-server',
+          permission_resource_format: 'uri',
+          grant_type: 'urn:ietf:params:oauth:grant-type:uma-ticket',
+          permission: `/${type}#read`,
+          response_mode: 'permissions'
+        },
+        {
+            headers: {
+                Authorization: `${userAccesstoken}`,
+                "Content-Type": "application/x-www-form-urlencoded"
+            }
+        }
+      );
+      console.log("RESPONSE DATA: ", response.data);
+      return response.data;
+      
+    } catch (error) {
+      console.error('Error getting user tenants:', error.message);
+      return [];
+    }
+}
+
+export async function getUserPermissionToCreateResource(userAccesstoken, resourceId, type) {
+    if (!userAccesstoken) {
+      console.error('User Access token not found. Please authenticate first.');
+      return;
+    }
+    try {
+      let url = `${keycloakConfig["auth-server-url"]}/realms/${keycloakConfig.realm}/protocol/openid-connect/token`;
+      let body = {};
+      if(type === "root") {
+        body = {
+          audience: 'resource-server',
+          permission_resource_format: 'uri',
+          grant_type: 'urn:ietf:params:oauth:grant-type:uma-ticket',
+          permission: `/${type}#create`,
+          response_mode: 'permissions'
+        }
+      }
+      else {
+        body = {
+          audience: 'resource-server',
+          grant_type: 'urn:ietf:params:oauth:grant-type:uma-ticket',
+          permission: `${resourceId}#create`,
+          response_mode: 'permissions'
+        }
+      }
+      const response = await axios.post(url,
+        body,
+        {
+            headers: {
+                Authorization: `${userAccesstoken}`,
+                "Content-Type": "application/x-www-form-urlencoded"
+            }
+        }
+      );
+      console.log("RESPONSE DATA: ", response.data);
+      return response.data;
+      
+    } catch (error) {
+      console.error('Error getting user tenants:', error.message);
+      return [];
+    }
+}
+
+export async function getUserPermissionToUpdateResource(userAccesstoken, resourceId) {
+    if (!userAccesstoken) {
+      console.error('User Access token not found. Please authenticate first.');
+      return;
+    }
+    try {
+      let url = `${keycloakConfig["auth-server-url"]}/realms/${keycloakConfig.realm}/protocol/openid-connect/token`;
+      const response = await axios.post(url,
+        {
+          audience: 'resource-server',
+          grant_type: 'urn:ietf:params:oauth:grant-type:uma-ticket',
+          permission: `${resourceId}#update`,
+          response_mode: 'permissions'
+        },
+        {
+            headers: {
+                Authorization: `${userAccesstoken}`,
+                "Content-Type": "application/x-www-form-urlencoded"
+            }
+        }
+      );
+      console.log("RESPONSE DATA: ", response.data);
+      return response.data;
+      
+    } catch (error) {
+      console.error('Error getting user tenants:', error.message);
+      return [];
+    }
+}
+
+export async function getUserPermissionToDeleteResource(userAccesstoken, resourceId) {
+    if (!userAccesstoken) {
+      console.error('User Access token not found. Please authenticate first.');
+      return;
+    }
+    try {
+      let url = `${keycloakConfig["auth-server-url"]}/realms/${keycloakConfig.realm}/protocol/openid-connect/token`;
+      const response = await axios.post(url,
+        {
+          audience: 'resource-server',
+          grant_type: 'urn:ietf:params:oauth:grant-type:uma-ticket',
+          permission: `${resourceId}#delete`,
+          response_mode: 'permissions'
+        },
+        {
+            headers: {
+                Authorization: `${userAccesstoken}`,
+                "Content-Type": "application/x-www-form-urlencoded"
+            }
+        }
+      );
+      console.log("RESPONSE DATA: ", response.data);
+      return response.data;
+      
+    } catch (error) {
+      console.error('Error getting user tenants:', error.message);
+      return [];
+    }
+}
+
+export async function getUserPermissionToReadResource(userAccesstoken, resourceId) {
+    if (!userAccesstoken) {
+      console.error('User Access token not found. Please authenticate first.');
+      return;
+    }
+    try {
+      let url = `${keycloakConfig["auth-server-url"]}/realms/${keycloakConfig.realm}/protocol/openid-connect/token`;
+      const response = await axios.post(url,
+        {
+          audience: 'resource-server',
+          grant_type: 'urn:ietf:params:oauth:grant-type:uma-ticket',
+          permission: `${resourceId}#read`,
+          response_mode: 'permissions'
+        },
+        {
+            headers: {
+                Authorization: `${userAccesstoken}`,
+                "Content-Type": "application/x-www-form-urlencoded"
+            }
+        }
+      );
+      console.log("RESPONSE DATA: ", response.data);
+      return response.data;
+      
+    } catch (error) {
+      console.error('Error getting user tenants:', error.message);
+      return [];
+    }
+}
+
+export async function getUserBulkPermissions(userAccesstoken, permissions) {
+    if (!userAccesstoken) {
+      console.error('User Access token not found. Please authenticate first.');
+      return;
+    }
+    try {
+      let url = `${keycloakConfig["auth-server-url"]}/realms/${keycloakConfig.realm}/resource-server/${keycloakConfig.resource}/permission/bulk`;
+      const response = await axios.post(url,
+        permissions,
+        {
+            headers: {
+                Authorization: `${userAccesstoken}`,
+                "Content-Type": "application/json"
+            }
+        }
+      );
+      return response.data;
+      
+    } catch (error) {
+      console.error('Error getting user tenants:', error.message);
+      return [];
+    }
+}

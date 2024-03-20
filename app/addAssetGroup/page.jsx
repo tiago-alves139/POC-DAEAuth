@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import ButtonGeneric from "../../components/ButtonGeneric";
 
-export default function AddAssetGroup({tenantId}) {
+export default function AddAssetGroup({tenantId, accessToken}) {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
 
@@ -23,6 +23,7 @@ export default function AddAssetGroup({tenantId}) {
         next: {tags: ["assetGroupList"]},
         method: "POST",
         headers: {
+          "Authorization": `Bearer ${accessToken}`,
           "Content-type": "application/json",
         },
         body: JSON.stringify({ title, description, tenantId }),

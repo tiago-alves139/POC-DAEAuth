@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import ButtonGeneric from "./ButtonGeneric";
 
-export default function EditDeviceForm({ id, title, description }) {
+export default function EditDeviceForm({ id, title, description, accessToken }) {
   const [newTitle, setNewTitle] = useState(title);
   const [newDescription, setNewDescription] = useState(description);
 
@@ -17,6 +17,7 @@ export default function EditDeviceForm({ id, title, description }) {
       const res = await fetch(`http://localhost:3000/api/devices/${id}`, {
         method: "PUT",
         headers: {
+          Authorization: `Bearer ${accessToken}`,
           "Content-type": "application/json",
         },
         body: JSON.stringify({ newTitle, newDescription }),

@@ -2,6 +2,7 @@ import mongoose, { Schema } from "mongoose";
 
 const tenantSchema = new Schema(
   {
+    _id: String,
     title: String,
     description: String,
   },

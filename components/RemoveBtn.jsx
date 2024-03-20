@@ -3,7 +3,7 @@
 import { HiOutlineTrash } from "react-icons/hi";
 import { useRouter } from "next/navigation";
 
-export default function RemoveBtn({ url }) {
+export default function RemoveBtn({ url, accessToken }) {
   const router = useRouter();
   const removeResource = async () => {
     const confirmed = confirm("Are you sure?");
@@ -11,6 +11,9 @@ export default function RemoveBtn({ url }) {
     if (confirmed) {
       const res = await fetch(`http://localhost:3000/${url}`, {
         method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        }
       });
 
       if (res.ok) {

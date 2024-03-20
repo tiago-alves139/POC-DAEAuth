@@ -6,8 +6,6 @@ import Logout from './Logout';
 
 export default function Breadcrumb() {
   const pathname = usePathname();
-
-  console.log("ROUTER PATHNAME: " + pathname);
   
   // Define the paths for which to create breadcrumbs
   const breadcrumbPaths = ['editTenant', 'editAssetGroup', "editDevice"];
@@ -27,8 +25,6 @@ export default function Breadcrumb() {
   
   // Add the root path segment to the array
   pathSegments.unshift('/');
-
-  console.log("PATH SEGMENTS: " + pathSegments);
 
   return (
     <nav className="flex justify-between items-center bg-slate-300 px-2 py-3 rounded" aria-label="breadcrumb">

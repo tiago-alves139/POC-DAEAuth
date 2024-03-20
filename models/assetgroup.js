@@ -2,6 +2,7 @@ import mongoose, { Schema } from "mongoose";
 
 const AssetGroupSchema = new Schema(
   {
+    _id: String,
     title: String,
     description: String,
     tenantId: String,

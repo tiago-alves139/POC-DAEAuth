@@ -6,28 +6,39 @@ import Logout from "@/components/Logout";
 import { getServerSession } from 'next-auth'
 import { authOptions } from './api/auth/[...nextauth]/route'
 
-export default async function Home() {
-  // const session = await getServerSession(authOptions);
-  // console.log("AUTH OPTIONS: " + authOptions);
-  // console.log(authOptions);
-  // console.log("SESSION: " + session);
+const getTenants = async (accessToken) => {
+  try {
+    const res = await fetch("http://localhost:3000/api/tenants", {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+      cache: "no-store",
+      credentials: "include"
+    });
 
-  // if (session) {
+    if (!res.ok) {
+      throw new Error("Failed to fetch tenants");
+    }
+
+    return res.json();
+  } catch (error) {
+    console.log("Error loading tenants: ", error);
+  }
+};
+
+export default async function Home() {
+  const session = await getServerSession(authOptions);
+  const { result } = await getTenants(session.accessToken);
+  const tenants = result.tenants;
+  console.log("Permission TO CREATE TENANTS: ", result.permissionCreateTenants);
+
   return (
   <>
     <h1 className="font-bold text-4xl">Tenants Page</h1>
     <br></br>
-    <AddTenant />
+    {result.permissionCreateTenants && <AddTenant accessToken={session.accessToken}/>}
     <br/>
-    <TenantsList />
+    <TenantsList tenants={tenants}/>
   </>
   );
-} 
-//   else {
-//     return (
-//       <div>
-//         <Login />
-//       </div>
-//     )
-//   }
-// }
+}

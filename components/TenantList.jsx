@@ -1,29 +1,17 @@
 import ListCard from "./ListCard";
 import List from "./List";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { getServerSession } from 'next-auth'
 
-const getTenants = async () => {
-  try {
-    const res = await fetch("http://localhost:3000/api/tenants", {
-      cache: "no-store",
-    });
 
-    if (!res.ok) {
-      throw new Error("Failed to fetch tenants");
-    }
-
-    return res.json();
-  } catch (error) {
-    console.log("Error loading tenants: ", error);
-  }
-};
-
-export default async function TenantsList() {
-  const { tenants } = await getTenants();
-
+export default async function TenantsList({ tenants }) {
+  const session = await getServerSession(authOptions);
+  console.log("TENANTS: ", tenants);
   return (
     <List title="Tenants List">
       {tenants.map((tenant) => (
-        <ListCard id={tenant._id} title={tenant.title} description={tenant.description} editUrl={`editTenant/${tenant._id}`} deleteUrl={`tenants?id=${tenant._id}`} />
+        <ListCard id={tenant._id} title={tenant.title} description={tenant.description} accessToken={session.accessToken} 
+        editUrl={`editTenant/${tenant._id}`} deleteUrl={`api/tenants?id=${tenant._id}`} permissionToDelete={tenant.scopes.includes("delete")} />
       ))}
     </List>
   );

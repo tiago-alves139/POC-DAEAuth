@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import ButtonGeneric from "../../components/ButtonGeneric";
 
-export default function AddTenant() {
+export default function AddTenant({accessToken}) {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
 
@@ -12,17 +12,16 @@ export default function AddTenant() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     if (!title || !description) {
       alert("Title and description are required.");
       return;
     }
-
     try {
       const res = await fetch("http://localhost:3000/api/tenants", {
         next: {tags: ["tenantList"]},
         method: "POST",
         headers: {
+          "Authorization": `Bearer ${accessToken}`,
           "Content-type": "application/json",
         },
         body: JSON.stringify({ title, description }),

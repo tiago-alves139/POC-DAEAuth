@@ -3,7 +3,8 @@ import Link from "next/link";
 import RemoveBtn from "./RemoveBtn";
 import { HiPencilAlt } from "react-icons/hi";
 
-export default function ListCard({ id, title, description, editUrl, deleteUrl }) {
+export default function ListCard({ id, title, description, accessToken, editUrl, deleteUrl, permissionToDelete }) {
+    console.log("permissionToDelete: ", permissionToDelete);
     return (
         <div
         key={id}
@@ -15,7 +16,7 @@ export default function ListCard({ id, title, description, editUrl, deleteUrl })
         </div>
 
         <div className="flex gap-2">
-            <RemoveBtn url={deleteUrl} />
+            {permissionToDelete && <RemoveBtn url={deleteUrl} accessToken={accessToken}/>}
             <Link href={editUrl}>
             <HiPencilAlt size={24} />
             </Link>

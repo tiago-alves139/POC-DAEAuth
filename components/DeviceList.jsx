@@ -1,29 +1,15 @@
 import List from "./List";
 import ListCard from "./ListCard";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { getServerSession } from 'next-auth'
 
-const getDevices = async (assetGroupId) => {
-  try {
-    const res = await fetch(`http://localhost:3000/api/assetgroups/${assetGroupId}/devices`, {
-      cache: "no-store",
-    });
-
-    if (!res.ok) {
-      throw new Error("Failed to fetch devices");
-    }
-
-    return res.json();
-  } catch (error) {
-    console.log("Error loading devices: ", error);
-  }
-};
-
-export default async function DevicesList({assetGroupId}) {
-  const { devices } = await getDevices(assetGroupId);
-
+export default async function DevicesList({assetGroupId, devices}) {
+  const session = await getServerSession(authOptions);
   return (
     <List title="Devices List">
       {devices.map((device) => (
-        <ListCard id={device._id} title={device.title} description={device.description} editUrl={`${assetGroupId}/editDevice/${device._id}`} deleteUrl={`devices?id=${device._id}`} />
+        <ListCard id={device._id} title={device.title} description={device.description} accessToken={session.accessToken} 
+        editUrl={`${assetGroupId}/editDevice/${device._id}`} deleteUrl={`api/devices?id=${device._id}`} permissionToDelete={device.scopes.includes("delete")} />
       ))}
     </List>
   );
