@@ -7,7 +7,7 @@ const keycloakConfig = {
     "auth-server-url": 'http://localhost:8080',
     resource: 'resource-server',
     credentials: {
-      secret: 'Ix187wO4vrSobRL8lXJJG4ELWu0KDaA9'
+      secret: 'NCgfqVX3plJi0uy7eL7yRa5QcsjdMYyZ'
     }
 };
 
@@ -34,9 +34,9 @@ export async function createTenantResource(id, name, displayName) {
         let uris = ["/tenants"];
         let roles = {
             "iotmanager": ["read"],
-            "facilitymanager": ["write"]
+            "facilitymanager": ["update"]
         };
-        let scopes = ["read", "write"];
+        let scopes = ["read", "create", "update", "delete"];
 
         await createClientAuthorizationResource(id, name, displayName, resourceType, uris, roles, scopes, null);
     }
@@ -54,9 +54,9 @@ export async function createAssetGroupResource(id, name, displayName, parentId) 
         let uris = ["/assetgroups"];
         let roles = {
             "iotmanager": ["read"],
-            "facilitymanager": ["write"]
+            "facilitymanager": ["update"]
         };
-        let scopes = ["read", "write"];
+        let scopes = ["read", "create", "update", "delete"];
 
         await createClientAuthorizationResource(id, name, displayName, resourceType, uris, roles, scopes, parentId);
     }
@@ -74,9 +74,9 @@ export async function createDeviceResource(id, name, displayName, parentId) {
         let uris = ["/devices"];
         let roles = {
             "iotmanager": ["read"],
-            "facilitymanager": ["write"]
+            "facilitymanager": ["update"]
         };
-        let scopes = ["read", "write"];
+        let scopes = ["read", "create", "update", "delete"];
 
         await createClientAuthorizationResource(id, name, displayName, resourceType, uris, roles, scopes, parentId);
     }
@@ -97,6 +97,7 @@ async function createClientAuthorizationResource(id, name, displayName, type, ur
     }
     try {
       let url = `${keycloakConfig["auth-server-url"]}/realms/${keycloakConfig.realm}/resource-server/${keycloakConfig.resource}/resource`;
+      console.log('URL:', url);
       const response = await axios.post(url, 
         {
             id: id,
@@ -217,7 +218,6 @@ export async function getUserResourcesByType(userAccesstoken, type){
     }
     try {
       let url = `${keycloakConfig["auth-server-url"]}/realms/${keycloakConfig.realm}/protocol/openid-connect/token`;
-      console.log('URL:', url);
       const response = await axios.post(url,
         {
           audience: 'resource-server',
@@ -233,7 +233,6 @@ export async function getUserResourcesByType(userAccesstoken, type){
             }
         }
       );
-      console.log("RESPONSE DATA: ", response.data);
       return response.data;
       
     } catch (error) {
@@ -276,11 +275,10 @@ export async function getUserPermissionToCreateResource(userAccesstoken, resourc
             }
         }
       );
-      console.log("RESPONSE DATA: ", response.data);
       return response.data;
       
     } catch (error) {
-      console.error('Error getting user tenants:', error.message);
+      console.error('Error getting permission to create resources:', error.message);
       return [];
     }
 }

@@ -16,20 +16,10 @@ export const metadata = {
 
 export default async function RootLayout({ children }) {
   const session = await getServerSession(authOptions);
+  // console.log("DATE EXPIRATION: ", new Date(session.exp*1000));
+  // console.log("DATE NOW: ", new Date(Date.now()));
 
-  if (session) {
-    return (
-      <html lang="en">
-        <body className={inter.className}>
-          <div>
-            <Breadcrumb />
-            <div className="mx-10 mt-8">{children}</div>
-          </div>
-        </body>
-      </html>
-    );
-  }
-  else {
+  if (!!session?.error === "RefreshAccessTokenError"){
     return (
       <html lang="en">
         <body className={inter.className}>
@@ -43,5 +33,17 @@ export default async function RootLayout({ children }) {
         </body>
       </html>
     )
+  }
+  else if(session) {
+    return (
+      <html lang="en">
+        <body className={inter.className}>
+          <div>
+            <Breadcrumb />
+            <div className="mx-10 mt-8">{children}</div>
+          </div>
+        </body>
+      </html>
+    );
   }
 }

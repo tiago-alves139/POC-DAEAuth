@@ -28,8 +28,13 @@ export async function GET(request) {
   const user_token = request.headers.get('authorization');
   const res = await getUserResourcesByType(user_token, "tenants"); //BUSCAR OS TENANTS QUE O USER TEM PERMISSAO READ
   let tenantsIds = [];
+  const permissionCreateTenants = await getUserPermissionToCreateResource(user_token, null, "root"); //VERIFICA SE O USER TEM PERMISSAO PARA CRIAR TENANTS
   if(res.length === 0){
-    return NextResponse.json({ tenants: tenantsIds });
+    let result = {
+      tenants: tenantsIds,
+      permissionCreateTenants: permissionCreateTenants.length > 0 ? true : false
+    }
+    return NextResponse.json({ result: result });
   }
   else {
     tenantsIds = res.map(tenant => tenant.rsid);
@@ -65,7 +70,6 @@ export async function GET(request) {
       }
     }
 
-    const permissionCreateTenants = await getUserPermissionToCreateResource(user_token, null, "root"); //VERIFICA SE O USER TEM PERMISSAO PARA CRIAR TENANTS
     let result = {
       tenants: tenantsObjects,
       permissionCreateTenants: permissionCreateTenants.length > 0 ? true : false
