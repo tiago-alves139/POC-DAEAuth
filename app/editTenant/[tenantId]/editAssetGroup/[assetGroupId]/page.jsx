@@ -53,6 +53,7 @@ export default async function EditAssetGroup({ params }) {
   const { devices } = await getDevices(session.accessToken, assetGroupId);
   console.log("PERMISSION TO UPDATE ASSET GROUP: ", result.permissionUpdate);
   console.log("PERMISSION TO CREATE DEVICES: ", result.permissionCreateDevices);
+  console.log("PERMISSION TO LIST USERS: ", result.permissionListUsers);
 
   return (
   <>
@@ -62,6 +63,8 @@ export default async function EditAssetGroup({ params }) {
     <DeviceList assetGroupId={assetGroupId} devices={devices}/>
     <br></br>
     {result.permissionCreateDevices && <AddDevice assetGroupId={assetGroupId} accessToken={session.accessToken}/>}
+    <br></br>
+    {result.permissionListUsers && <UserList resourceId={assetGroupId} accessToken={session.accessToken}/>}
   </>
   );
 }

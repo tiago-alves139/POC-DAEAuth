@@ -3,7 +3,7 @@ import Tenant from "@/models/tenant";
 import AssetGroup from "@/models/assetgroup";
 import { NextResponse } from "next/server";
 import { updateClientAuthorizationResource } from "../../auth/[...nextauth]/resourceClient";
-import { getUserPermissionToUpdateResource, getUserPermissionToReadResource, getUserPermissionToCreateResource } from "../../auth/[...nextauth]/resourceClient";
+import { getUserPermission, getUserPermissionToUpdateResource, getUserPermissionToReadResource, getUserPermissionToCreateResource } from "../../auth/[...nextauth]/resourceClient";
 
 export async function PUT(request, { params }) {
   const user_token = request.headers.get('authorization');
@@ -33,11 +33,14 @@ export async function GET(request, { params }) {
     const tenant = await Tenant.findOne({ _id: id });
     const permissionToUpdate = await getUserPermissionToUpdateResource(user_token, id); //VERIFICA SE O USER TEM PERMISSAO PARA UPDATE TENANT
     const permissionToCreateAssetGroups = await getUserPermissionToCreateResource(user_token, id, ""); //VERIFICA SE O USER TEM PERMISSAO PARA CRIAR ASSET GROUPS DENTRO DO TENANT
+    const permission = { permission: `${id}#listUsers`, permission_resource_format: "", response_mode: "" };
+    const res = await getUserPermission(user_token, permission);
 
     let result = {
       tenant: tenant,
       permissionUpdate: permissionToUpdate.length > 0 ? true : false,
-      permissioCreateAssetGroups: permissionToCreateAssetGroups.length > 0 ? true : false
+      permissioCreateAssetGroups: permissionToCreateAssetGroups.length > 0 ? true : false,
+      permissionListUsers: res
     }
     return NextResponse.json({ result }, { status: 200 });
   }

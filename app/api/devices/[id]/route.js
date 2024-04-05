@@ -30,10 +30,13 @@ export async function GET(request, { params }) {
     await connectMongoDB();
     const device = await Device.findOne({ _id: id });
     const permissionToUpdate = await getUserPermissionToUpdateResource(user_token, id); //VERIFICA SE O USER TEM PERMISSAO PARA UPDATE TENANT
+    const permission = { permission: `${id}#listUsers`, permission_resource_format: "", response_mode: "" };
+    const res = await getUserPermission(user_token, permission);
 
     let result = {
       device: device,
-      permissionUpdate: permissionToUpdate.length > 0 ? true : false
+      permissionUpdate: permissionToUpdate.length > 0 ? true : false,
+      permissionListUsers: res
     }
 
     return NextResponse.json({ result }, { status: 200 });

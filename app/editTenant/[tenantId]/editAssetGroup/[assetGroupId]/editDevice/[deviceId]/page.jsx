@@ -28,11 +28,14 @@ export default async function EditDevice({ params }) {
   const device = result.device;
   const { title, description } = device;
   console.log("PERMISSION TO UPDATE DEVICE: ", result.permissionUpdate);
+  console.log("PERMISSION TO LIST USERS: ", result.permissionListUsers);
 
   return (
   <>
     <h1 className="font-bold text-4xl mb-4">{title}</h1>
     {result.permissionUpdate && <EditDeviceForm id={deviceId} title={title} description={description} accessToken={session.accessToken} />}
+    <br></br>
+    {result.permissionListUsers && <UserList resourceId={deviceId} accessToken={session.accessToken}/>}
   </>
   );
 }

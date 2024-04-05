@@ -3,6 +3,7 @@ import AssetGroupsList from "@/components/AssetGroupList";
 import AddAssetGroup from "@/app/addAssetGroup/page";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { getServerSession } from 'next-auth'
+import UserList from "@/components/UserList";
 
 const getTenantById = async (id, accessToken) => {
   try {
@@ -52,6 +53,7 @@ export default async function EditTenant({ params }) {
   const { assetGroups } = await getAssetGroups(session.accessToken, tenantId);
   console.log("PERMISSION TO UPDATE TENANT: ", result.permissionUpdate);
   console.log("PERMISSION TO CREATE ASSET GROUPS: ", result.permissioCreateAssetGroups);
+  console.log("PERMISSION TO LIST USERS: ", result.permissionListUsers);
 
   return (
   <>
@@ -61,6 +63,8 @@ export default async function EditTenant({ params }) {
     <AssetGroupsList tenantId={tenantId} assetGroups={assetGroups}/>
     <br></br>
     {result.permissioCreateAssetGroups && <AddAssetGroup tenantId={tenantId} accessToken={session.accessToken}/>}
+    <br></br>
+    {result.permissionListUsers && <UserList resourceId={tenantId} accessToken={session.accessToken}/>}
   </>
   );
 }

@@ -19,7 +19,7 @@ export default async function RootLayout({ children }) {
   // console.log("DATE EXPIRATION: ", new Date(session.exp*1000));
   // console.log("DATE NOW: ", new Date(Date.now()));
 
-  if (!!session?.error === "RefreshAccessTokenError"){
+  if (!session || session?.error === "RefreshAccessTokenError"){
     return (
       <html lang="en">
         <body className={inter.className}>
@@ -35,6 +35,7 @@ export default async function RootLayout({ children }) {
     )
   }
   else if(session) {
+    console.log("SESSION: ", session.accessToken);
     return (
       <html lang="en">
         <body className={inter.className}>

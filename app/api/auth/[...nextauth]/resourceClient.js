@@ -7,7 +7,7 @@ const keycloakConfig = {
     "auth-server-url": 'http://localhost:8080',
     resource: 'resource-server',
     credentials: {
-      secret: 'NCgfqVX3plJi0uy7eL7yRa5QcsjdMYyZ'
+      secret: 'tbt1YwUnJD4iGEp2kFEj62oe55LoA1Vs'
     }
 };
 
@@ -236,7 +236,7 @@ export async function getUserResourcesByType(userAccesstoken, type){
       return response.data;
       
     } catch (error) {
-      console.error('Error getting user tenants:', error.message);
+      console.error(`Error getting user resources by type: ${type}: `, error.message);
       return [];
     }
 }
@@ -308,7 +308,7 @@ export async function getUserPermissionToUpdateResource(userAccesstoken, resourc
       return response.data;
       
     } catch (error) {
-      console.error('Error getting user tenants:', error.message);
+      console.error('Error getting user permission to update resource:', error.message);
       return [];
     }
 }
@@ -338,7 +338,7 @@ export async function getUserPermissionToDeleteResource(userAccesstoken, resourc
       return response.data;
       
     } catch (error) {
-      console.error('Error getting user tenants:', error.message);
+      console.error('Error getting user permission to delete resource:', error.message);
       return [];
     }
 }
@@ -368,7 +368,7 @@ export async function getUserPermissionToReadResource(userAccesstoken, resourceI
       return response.data;
       
     } catch (error) {
-      console.error('Error getting user tenants:', error.message);
+      console.error('Error getting user permission to read resource:', error.message);
       return [];
     }
 }
@@ -392,7 +392,58 @@ export async function getUserBulkPermissions(userAccesstoken, permissions) {
       return response.data;
       
     } catch (error) {
-      console.error('Error getting user tenants:', error.message);
+      console.error('Error getting user bulk permissions:', error.message);
       return [];
     }
+}
+
+export async function getUserPermission(userAccesstoken, permission) {
+  if (!userAccesstoken) {
+    console.error('User Access token not found. Please authenticate first.');
+    return;
+  }
+  try {
+    let url = `${keycloakConfig["auth-server-url"]}/realms/${keycloakConfig.realm}/resource-server/${keycloakConfig.resource}/permission`;
+    const response = await axios.post(url,
+      permission,
+      {
+          headers: {
+              Authorization: `${userAccesstoken}`,
+              "Content-Type": "application/json"
+          }
+      }
+    );  
+    return response.data;
+    
+  } catch (error) {
+    console.log('Error:', error);
+    console.error('Error getting user permission:', error.message);
+    return [];
+  }
+}
+
+export async function getRoleUsers(resourceId, roleId, type) {
+  await authenticate(); // Authenticate with Keycloak
+  const token = getAccessToken(); // Get the stored access token
+
+  if (!token) {
+    console.error('Access token not found. Please authenticate first.');
+    return;
+  }
+
+  try{
+    let url = `${keycloakConfig["auth-server-url"]}/realms/${keycloakConfig.realm}/resource-server/${keycloakConfig.resource}/resource/${resourceId}/${type}/${roleId}/users`;
+    console.log('URL:', url);
+    const response = await axios.get(url,
+      {
+          headers: {
+              Authorization: `Bearer ${token}`
+          }
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error('Error getting role users:', error.message);
+    return [];
+  }
 }
