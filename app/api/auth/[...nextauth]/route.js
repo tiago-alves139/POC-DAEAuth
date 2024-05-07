@@ -4,7 +4,7 @@ import KeycloakProvider from "next-auth/providers/keycloak"
 
 const keycloakOptions = {
   clientId: "poc-daeauth",
-  clientSecret: "sU5u9K0yx7IN4zKRoICAhxUydQapqyh4",
+  clientSecret: "iHgdR11XImG8n0QUTAFqB4lE27hInTH0",
   issuer: "http://localhost:8080/realms/POC-DaeAuth",
 }
 

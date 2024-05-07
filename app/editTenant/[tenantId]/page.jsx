@@ -60,7 +60,7 @@ export default async function EditTenant({ params }) {
   <h1 className="font-bold text-4xl mb-4">{title}</h1>
     {result.permissionUpdate && <EditTenantForm id={tenantId} title={title} description={description} accessToken={session.accessToken} />}
     <br></br>
-    <AssetGroupsList tenantId={tenantId} assetGroups={assetGroups}/>
+    <AssetGroupsList tenantId={tenantId} assetGroups={assetGroups} accessToken={session.accessToken}/>
     <br></br>
     {result.permissioCreateAssetGroups && <AddAssetGroup tenantId={tenantId} accessToken={session.accessToken}/>}
     <br></br>

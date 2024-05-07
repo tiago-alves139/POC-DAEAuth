@@ -9,21 +9,23 @@ export default function UserList({ accessToken, resourceId}) {
   const [type, setType] = useState("");
   const [roleId, setRoleId] = useState("");
   const [roleOptions, setRoleOptions] = useState([]);
-  const [users, setUsers] = useState([]); 
+  const [users, setUsers] = useState([]);
+  const [userEmail, setUserEmail] = useState('');
+  const [permissionToAddUser, setPermissionToAddUser] = useState(false);
 
   useEffect(() => {
     switch (type) {
         case 'role':
-            setRoleOptions(['iotmanager', 'facilitymanager']);
+            setRoleOptions(['iotmanager', 'facilitymanager', 'admin']);
             break;
         case 'scope':
-            setRoleOptions(['read', 'write']);
+            setRoleOptions(['read', 'create', 'update', 'delete', 'listUsers', 'addUserPermission']);
             break;
         case 'deny_role':
-            setRoleOptions(['iotmanager', 'facilitymanager']);
+            setRoleOptions(['iotmanager', 'facilitymanager', 'admin']);
             break;
         case 'deny_scope':
-            setRoleOptions(['read', 'write']);
+            setRoleOptions(['read', 'create', 'update', 'delete', 'listUsers', 'addUserPermission']);
             break;
         case 'deny':
             setRoleOptions([]);
@@ -40,7 +42,7 @@ export default function UserList({ accessToken, resourceId}) {
         const res = await fetch(`http://localhost:3000/api/resources/${resourceId}/${type}/${roleId}/users`, {
             method: "GET",
             headers: {
-            "Authorization": `Bearer ${accessToken}`
+                "Authorization": `Bearer ${accessToken}`
             }
         });
         if (!res.ok) {
@@ -49,9 +51,28 @@ export default function UserList({ accessToken, resourceId}) {
         const data = await res.json();
         console.log("data: ", data);
         setUsers(data.users);
+        setPermissionToAddUser(data.permission);
     } catch (error) {
         console.log(error);
     }
+  };
+
+  const addUser = async (event) => {
+    event.preventDefault();
+    try {
+        const res = await fetch(`http://localhost:3000/api/resources/${resourceId}/${type}/${roleId}/users/${userEmail}`, { 
+            method: "POST",
+            headers: {
+                "Authorization": `Bearer ${accessToken}`,
+            }
+        });
+        setUserEmail('');
+        getRoleUsers(event);
+    } catch {
+        console.log('error');
+    }
+    // Add user logic here
+    console.log(userEmail);
   };
 
   return (
@@ -79,6 +100,20 @@ export default function UserList({ accessToken, resourceId}) {
                     <UserCard key={index} user={user} />
             ))}
         </List>
+        <br/>
+        {permissionToAddUser && (
+            <form onSubmit={addUser} className="mb-8">
+                <input
+                    type="text"
+                    value={userEmail}
+                    onChange={e => setUserEmail(e.target.value)}
+                    className="block w-1/2 py-2 px-4 rounded mb-4 bg-white shadow border border-gray-300 border-2"
+                    placeholder="Enter user email"
+                />
+                <ButtonGeneric title="Add User" className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                </ButtonGeneric>
+        </form>
+        )}
     </>
   );
 }

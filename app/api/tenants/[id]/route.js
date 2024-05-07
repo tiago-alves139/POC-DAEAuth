@@ -35,6 +35,7 @@ export async function GET(request, { params }) {
     const permissionToCreateAssetGroups = await getUserPermissionToCreateResource(user_token, id, ""); //VERIFICA SE O USER TEM PERMISSAO PARA CRIAR ASSET GROUPS DENTRO DO TENANT
     const permission = { permission: `${id}#listUsers`, permission_resource_format: "", response_mode: "" };
     const res = await getUserPermission(user_token, permission);
+    console.log("Permission to list users: ", res)
 
     let result = {
       tenant: tenant,

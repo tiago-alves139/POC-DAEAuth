@@ -4,7 +4,7 @@ import AssetGroup from "@/models/assetgroup";
 import { revalidateTag } from "next/cache";
 import { NextResponse } from "next/server";
 import {createAssetGroupResource, deleteClientAuthorizationResource} from "../auth/[...nextauth]/resourceClient";
-import { getUserPermissionToCreateResource, getUserPermissionToReadResource, getUserPermissionToDeleteResource } from "../auth/[...nextauth]/resourceClient";
+import { getUserPermissionToCreateResource, getUserResourcesByType, getUserPermissionToDeleteResource } from "../auth/[...nextauth]/resourceClient";
 
 
 export async function POST(request) {
@@ -37,5 +37,23 @@ export async function DELETE(request) {
     await AssetGroup.findByIdAndDelete(id); //DELETE ON MONGODB
     await deleteClientAuthorizationResource(id); //DELETE RESOURCE ON KEYCLOAK
     return NextResponse.json({ message: "AssetGroup deleted" }, { status: 200 });
+  }
+}
+
+export async function GET(request) {
+  const user_token = request.headers.get('authorization');
+  const res = await getUserResourcesByType(user_token, "assetgroups");
+  let assetgroupsIds = [];
+  if(res.length === 0){
+    return NextResponse.json({ assetGroups: assetgroupsIds });
+  }
+  else {
+    assetgroupsIds = res.map(assetgroup => assetgroup.rsid);
+    await connectMongoDB();
+    const assetGroupsMongo = await AssetGroup.find({
+      _id: { $in: assetgroupsIds }
+    });
+
+    return NextResponse.json({ assetGroups: assetGroupsMongo });
   }
 }

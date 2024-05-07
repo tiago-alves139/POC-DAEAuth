@@ -1,6 +1,7 @@
 import EditDeviceForm from "@/components/EditDeviceForm";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { getServerSession } from 'next-auth'
+import UserList from "@/components/UserList";
 
 const getDeviceById = async (deviceId, accessToken) => {
   try {

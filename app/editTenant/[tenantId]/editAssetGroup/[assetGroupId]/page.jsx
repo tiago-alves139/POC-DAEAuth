@@ -3,6 +3,7 @@ import DeviceList from "@/components/DeviceList";
 import AddDevice from "@/app/addDevice/page";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { getServerSession } from 'next-auth'
+import UserList from "@/components/UserList";
 
 const getAssetGroupById = async (id, accessToken) => {
   try {
@@ -60,7 +61,7 @@ export default async function EditAssetGroup({ params }) {
   <h1 className="font-bold text-4xl mb-4">{title}</h1>
     {result.permissionUpdate && <EditAssetGroupForm id={assetGroupId} title={title} description={description} accessToken={session.accessToken} />}
     <br></br>
-    <DeviceList assetGroupId={assetGroupId} devices={devices}/>
+    <DeviceList assetGroupId={assetGroupId} devices={devices} accessToken={session.accessToken}/>
     <br></br>
     {result.permissionCreateDevices && <AddDevice assetGroupId={assetGroupId} accessToken={session.accessToken}/>}
     <br></br>

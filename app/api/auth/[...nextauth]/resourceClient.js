@@ -7,7 +7,7 @@ const keycloakConfig = {
     "auth-server-url": 'http://localhost:8080',
     resource: 'resource-server',
     credentials: {
-      secret: 'tbt1YwUnJD4iGEp2kFEj62oe55LoA1Vs'
+      secret: 'tOfwQcsrXo1UFaKqzCFKwIOXqAizH94X'
     }
 };
 
@@ -34,9 +34,10 @@ export async function createTenantResource(id, name, displayName) {
         let uris = ["/tenants"];
         let roles = {
             "iotmanager": ["read"],
-            "facilitymanager": ["update"]
-        };
-        let scopes = ["read", "create", "update", "delete"];
+            "facilitymanager": ["update"],
+            "admin": ["read", "create", "update", "delete", "listUsers", "addUserPermission"]
+          };
+          let scopes = ["read", "create", "update", "delete", "listUsers", "addUserPermission"];
 
         await createClientAuthorizationResource(id, name, displayName, resourceType, uris, roles, scopes, null);
     }
@@ -54,9 +55,10 @@ export async function createAssetGroupResource(id, name, displayName, parentId) 
         let uris = ["/assetgroups"];
         let roles = {
             "iotmanager": ["read"],
-            "facilitymanager": ["update"]
+            "facilitymanager": ["update"],
+            "admin": ["read", "create", "update", "delete", "listUsers", "addUserPermission"]
         };
-        let scopes = ["read", "create", "update", "delete"];
+        let scopes = ["read", "create", "update", "delete", "listUsers", "addUserPermission"];
 
         await createClientAuthorizationResource(id, name, displayName, resourceType, uris, roles, scopes, parentId);
     }
@@ -74,9 +76,10 @@ export async function createDeviceResource(id, name, displayName, parentId) {
         let uris = ["/devices"];
         let roles = {
             "iotmanager": ["read"],
-            "facilitymanager": ["update"]
+            "facilitymanager": ["update"],
+            "admin": ["read", "create", "update", "delete", "listUsers", "addUserPermission"]
         };
-        let scopes = ["read", "create", "update", "delete"];
+        let scopes = ["read", "create", "update", "delete", "listUsers", "addUserPermission"];
 
         await createClientAuthorizationResource(id, name, displayName, resourceType, uris, roles, scopes, parentId);
     }
@@ -97,7 +100,6 @@ async function createClientAuthorizationResource(id, name, displayName, type, ur
     }
     try {
       let url = `${keycloakConfig["auth-server-url"]}/realms/${keycloakConfig.realm}/resource-server/${keycloakConfig.resource}/resource`;
-      console.log('URL:', url);
       const response = await axios.post(url, 
         {
             id: id,
@@ -217,23 +219,11 @@ export async function getUserResourcesByType(userAccesstoken, type){
       return;
     }
     try {
-      let url = `${keycloakConfig["auth-server-url"]}/realms/${keycloakConfig.realm}/protocol/openid-connect/token`;
-      const response = await axios.post(url,
-        {
-          audience: 'resource-server',
-          permission_resource_format: 'uri',
-          grant_type: 'urn:ietf:params:oauth:grant-type:uma-ticket',
-          permission: `/${type}#read`,
-          response_mode: 'permissions'
-        },
-        {
-            headers: {
-                Authorization: `${userAccesstoken}`,
-                "Content-Type": "application/x-www-form-urlencoded"
-            }
-        }
-      );
-      return response.data;
+      let permission = { permission: `/${type}#read`, permission_resource_format: "uri", response_mode: "permissions" };
+      let result = await getUserPermission(userAccesstoken, permission);
+      console.log("RESPONSE DATA: ", result);
+
+      return result;
       
     } catch (error) {
       console.error(`Error getting user resources by type: ${type}: `, error.message);
@@ -247,35 +237,18 @@ export async function getUserPermissionToCreateResource(userAccesstoken, resourc
       return;
     }
     try {
-      let url = `${keycloakConfig["auth-server-url"]}/realms/${keycloakConfig.realm}/protocol/openid-connect/token`;
-      let body = {};
+      let permission = {};
       if(type === "root") {
-        body = {
-          audience: 'resource-server',
-          permission_resource_format: 'uri',
-          grant_type: 'urn:ietf:params:oauth:grant-type:uma-ticket',
-          permission: `/${type}#create`,
-          response_mode: 'permissions'
-        }
+        permission = { permission: `/${type}#create`, permission_resource_format: "uri", response_mode: "permissions" };
       }
       else {
-        body = {
-          audience: 'resource-server',
-          grant_type: 'urn:ietf:params:oauth:grant-type:uma-ticket',
-          permission: `${resourceId}#create`,
-          response_mode: 'permissions'
-        }
+        permission = { permission: `${resourceId}#create`, permission_resource_format: "", response_mode: "permissions" };
       }
-      const response = await axios.post(url,
-        body,
-        {
-            headers: {
-                Authorization: `${userAccesstoken}`,
-                "Content-Type": "application/x-www-form-urlencoded"
-            }
-        }
-      );
-      return response.data;
+      console.log("PERMISSION: ", permission)
+      let result = await getUserPermission(userAccesstoken, permission);
+      console.log("RESPONSE DATA: ", result);
+
+      return result;
       
     } catch (error) {
       console.error('Error getting permission to create resources:', error.message);
@@ -289,23 +262,11 @@ export async function getUserPermissionToUpdateResource(userAccesstoken, resourc
       return;
     }
     try {
-      let url = `${keycloakConfig["auth-server-url"]}/realms/${keycloakConfig.realm}/protocol/openid-connect/token`;
-      const response = await axios.post(url,
-        {
-          audience: 'resource-server',
-          grant_type: 'urn:ietf:params:oauth:grant-type:uma-ticket',
-          permission: `${resourceId}#update`,
-          response_mode: 'permissions'
-        },
-        {
-            headers: {
-                Authorization: `${userAccesstoken}`,
-                "Content-Type": "application/x-www-form-urlencoded"
-            }
-        }
-      );
-      console.log("RESPONSE DATA: ", response.data);
-      return response.data;
+      let permission = { permission: `${resourceId}#update`, permission_resource_format: "", response_mode: "permissions" };
+      let result = await getUserPermission(userAccesstoken, permission);
+      console.log("RESPONSE DATA: ", result);
+
+      return result;
       
     } catch (error) {
       console.error('Error getting user permission to update resource:', error.message);
@@ -319,22 +280,10 @@ export async function getUserPermissionToDeleteResource(userAccesstoken, resourc
       return;
     }
     try {
-      let url = `${keycloakConfig["auth-server-url"]}/realms/${keycloakConfig.realm}/protocol/openid-connect/token`;
-      const response = await axios.post(url,
-        {
-          audience: 'resource-server',
-          grant_type: 'urn:ietf:params:oauth:grant-type:uma-ticket',
-          permission: `${resourceId}#delete`,
-          response_mode: 'permissions'
-        },
-        {
-            headers: {
-                Authorization: `${userAccesstoken}`,
-                "Content-Type": "application/x-www-form-urlencoded"
-            }
-        }
-      );
-      console.log("RESPONSE DATA: ", response.data);
+      let permission = { permission: `${resourceId}#delete`, permission_resource_format: "", response_mode: "permissions" };
+      let result = await getUserPermission(userAccesstoken, permission);
+      console.log("RESPONSE DATA: ", result);
+
       return response.data;
       
     } catch (error) {
@@ -349,23 +298,11 @@ export async function getUserPermissionToReadResource(userAccesstoken, resourceI
       return;
     }
     try {
-      let url = `${keycloakConfig["auth-server-url"]}/realms/${keycloakConfig.realm}/protocol/openid-connect/token`;
-      const response = await axios.post(url,
-        {
-          audience: 'resource-server',
-          grant_type: 'urn:ietf:params:oauth:grant-type:uma-ticket',
-          permission: `${resourceId}#read`,
-          response_mode: 'permissions'
-        },
-        {
-            headers: {
-                Authorization: `${userAccesstoken}`,
-                "Content-Type": "application/x-www-form-urlencoded"
-            }
-        }
-      );
-      console.log("RESPONSE DATA: ", response.data);
-      return response.data;
+      let permission = { permission: `${resourceId}#read`, permission_resource_format: "", response_mode: "permissions" };
+      let result = await getUserPermission(userAccesstoken, permission);
+      console.log("RESPONSE DATA: ", result);
+
+      return result;
       
     } catch (error) {
       console.error('Error getting user permission to read resource:', error.message);
@@ -402,6 +339,7 @@ export async function getUserPermission(userAccesstoken, permission) {
     console.error('User Access token not found. Please authenticate first.');
     return;
   }
+  
   try {
     let url = `${keycloakConfig["auth-server-url"]}/realms/${keycloakConfig.realm}/resource-server/${keycloakConfig.resource}/permission`;
     const response = await axios.post(url,
@@ -412,12 +350,12 @@ export async function getUserPermission(userAccesstoken, permission) {
               "Content-Type": "application/json"
           }
       }
-    );  
+    );
+    console.log("RESPONSE DATA: ", response.data);
     return response.data;
     
   } catch (error) {
-    console.log('Error:', error);
-    console.error('Error getting user permission:', error.message);
+      console.error('Error getting user permission:', error.message);
     return [];
   }
 }
@@ -444,6 +382,89 @@ export async function getRoleUsers(resourceId, roleId, type) {
     return response.data;
   } catch (error) {
     console.error('Error getting role users:', error.message);
+    return [];
+  }
+}
+
+async function getUserByEmail(email) {
+  await authenticate(); // Authenticate with Keycloak
+  const token = getAccessToken(); // Get the stored access token
+
+  if (!token) {
+    console.error('Access token not found. Please authenticate first.');
+    return;
+  }
+
+  try {
+    let url = `${keycloakConfig["auth-server-url"]}/admin/realms/${keycloakConfig.realm}/users?email=${encodeURIComponent(email)}`;
+    console.log('URL:', url);
+    const response = await axios.get(url,
+      {
+          headers: {
+              Authorization: `Bearer ${token}`
+          }
+      }
+    );
+    console.log('User obtained:', response.data);
+    return response.data;
+  } catch (error) {
+    console.error('Error getting user:', error.message);
+    return [];
+  }
+}
+
+export async function addPermissionToUser(resourceId, userId, roleId, type) {
+  await authenticate(); // Authenticate with Keycloak
+  const token = getAccessToken(); // Get the stored access token
+
+  if (!token) {
+    console.error('Access token not found. Please authenticate first.');
+    return;
+  }
+
+  try{
+    let user = await getUserByEmail(userId);
+    console.log('User:', user);
+    userId = user[0].id;
+    let url = `${keycloakConfig["auth-server-url"]}/realms/${keycloakConfig.realm}/resource-server/${keycloakConfig.resource}/user/${userId}/${type}/${roleId}/resource/${resourceId}`;
+    console.log('URL:', url);
+    const response = await axios.post(url, {},
+      {
+          headers: {
+              Authorization: `Bearer ${token}`
+          }
+      }
+    );
+    console.log('Permission added to user:', response.data);
+    return response.data;
+  } catch (error) {
+    console.error('Error adding permission to user:', error.message);
+    return [];
+  }
+}
+
+export async function addPermissionToUser_WithUserToken(resourceId, userId, roleId, type, userAccesstoken) {
+  if (!userAccesstoken) {
+    console.error('Access token not found. Please authenticate first.');
+    return;
+  }
+
+  try{
+    let user = await getUserByEmail(userId);
+    userId = user[0].id;
+    let url = `${keycloakConfig["auth-server-url"]}/realms/${keycloakConfig.realm}/resource-server/${keycloakConfig.resource}/user/${userId}/${type}/${roleId}/resource/${resourceId}`;
+    console.log('URL:', url);
+    const response = await axios.post(url, {},
+      {
+          headers: {
+              Authorization: `${userAccesstoken}`
+          }
+      }
+    );
+    console.log('Permission added to user:', response.data);
+    return response.data;
+  } catch (error) {
+    console.error('Error adding permission to user:', error.message);
     return [];
   }
 }

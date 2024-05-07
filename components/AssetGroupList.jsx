@@ -1,18 +1,36 @@
+"use client";
+
 import List from "./List";
 import ListCard from "./ListCard";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-import { getServerSession } from 'next-auth'
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 
-export default async function AssetGroupsList({tenantId, assetGroups}) {
-  const session = await getServerSession(authOptions);
+let auto = true;
+
+export default function AssetGroupsList({tenantId, assetGroups, accessToken}) {
+  const router = useRouter();
+  
+  useEffect(() => {
+    if (assetGroups.length === 1 && auto) {
+      router.push(`${tenantId}/editAssetGroup/${assetGroups[0]._id}`);
+      auto = false;
+    }
+  }, [assetGroups]);
+
   console.log("ASSET GROUPS: ", assetGroups);
 
   return (
-    <List title="Asset Groups List">
-      {assetGroups.map((assetGroup) => (
-        <ListCard id={assetGroup._id} title={assetGroup.title} description={assetGroup.description} accessToken={session.accessToken} 
-        editUrl={`${tenantId}/editAssetGroup/${assetGroup._id}`} deleteUrl={`api/assetGroups?id=${assetGroup._id}`} permissionToDelete={assetGroup.scopes.includes("delete")} />
-      ))}
-    </List>
+    (assetGroups.length === 1 && auto) ? 
+    (
+      <div>LOADING ...</div> 
+    ) :
+    (
+      <List title="Asset Groups List">
+        {assetGroups.map((assetGroup) => (
+          <ListCard id={assetGroup._id} title={assetGroup.title} description={assetGroup.description} accessToken={accessToken} 
+          editUrl={`${tenantId}/editAssetGroup/${assetGroup._id}`} deleteUrl={`api/assetGroups?id=${assetGroup._id}`} permissionToDelete={assetGroup.scopes.includes("delete")} />
+        ))}
+      </List>
+    )
   );
 }

@@ -2,7 +2,7 @@ import connectMongoDB from "@/libs/mongodb";
 import AssetGroup from "@/models/assetgroup";
 import Device from "@/models/device";
 import { NextResponse } from "next/server";
-import { updateClientAuthorizationResource, getUserPermissionToUpdateResource, getUserPermissionToReadResource, getUserPermissionToCreateResource } from "../../auth/[...nextauth]/resourceClient";
+import { updateClientAuthorizationResource, getUserPermissionToUpdateResource, getUserPermissionToReadResource, getUserPermissionToCreateResource, getUserPermission } from "../../auth/[...nextauth]/resourceClient";
 
 export async function PUT(request, { params }) {
   const user_token = request.headers.get('authorization');

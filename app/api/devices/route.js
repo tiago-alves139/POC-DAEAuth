@@ -3,7 +3,7 @@ import Device from "@/models/device";
 import { v4 as uuidv4 } from 'uuid';
 import { revalidateTag } from "next/cache";
 import { NextResponse } from "next/server";
-import { createDeviceResource, deleteClientAuthorizationResource, getUserPermissionToCreateResource, getUserPermissionToDeleteResource } from "../auth/[...nextauth]/resourceClient";
+import { createDeviceResource, deleteClientAuthorizationResource, getUserPermissionToCreateResource, getUserPermissionToDeleteResource, getUserResourcesByType } from "../auth/[...nextauth]/resourceClient";
 
 export async function POST(request) {
   const user_token = request.headers.get('authorization');
@@ -34,5 +34,23 @@ export async function DELETE(request) {
     await Device.findByIdAndDelete(id); //DELETE ON MONGODB
     await deleteClientAuthorizationResource(id); //DELETE RESOURCE ON KEYCLOAK
     return NextResponse.json({ message: "Device deleted" }, { status: 200 });
+  }
+}
+
+export async function GET(request) {
+  const user_token = request.headers.get('authorization');
+  const res = await getUserResourcesByType(user_token, "devices");
+  let devicesIds = [];
+  if(res.length === 0){
+    return NextResponse.json({ devices: devicesIds });
+  }
+  else {
+    devicesIds = res.map(device => device.rsid);
+    await connectMongoDB();
+    const devicesMongo = await Device.find({
+      _id: { $in: devicesIds }
+    });
+
+    return NextResponse.json({ devices: devicesMongo });
   }
 }

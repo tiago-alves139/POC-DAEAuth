@@ -30,6 +30,7 @@ export default async function Home() {
   const session = await getServerSession(authOptions);
   const { result } = await getTenants(session.accessToken);
   const tenants = result.tenants;
+  console.log("Tenants: ", tenants);
   console.log("Permission TO CREATE TENANTS: ", result.permissionCreateTenants);
 
   return (
@@ -38,7 +39,7 @@ export default async function Home() {
     <br></br>
     {result.permissionCreateTenants && <AddTenant accessToken={session.accessToken}/>}
     <br/>
-    <TenantsList tenants={tenants}/>
+    <TenantsList tenants={tenants} accessToken={session.accessToken}/>
   </>
   );
 }

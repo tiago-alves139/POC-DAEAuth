@@ -73,6 +73,15 @@
         "attributes": {}
       },
       {
+        "id": "c0187d03-3ca1-45b9-b0b2-f0cd1b5368a7",
+        "name": "users_viewer",
+        "description": "",
+        "composite": false,
+        "clientRole": false,
+        "containerId": "efd4de92-0d93-41c7-b6fd-a1ad48524730",
+        "attributes": {}
+      },
+      {
         "id": "9feb032d-bef2-4d83-b143-7061e16d1c47",
         "name": "default-roles-poc-daeauth",
         "description": "${role_default-roles}",
@@ -281,8 +290,8 @@
                 "query-realms",
                 "manage-users",
                 "manage-authorization",
-                "query-clients",
                 "impersonation",
+                "query-clients",
                 "manage-realm",
                 "query-users",
                 "create-client",
@@ -526,9 +535,13 @@
       "realmRoles": [
         "resource_manager",
         "user_paths_manager",
+        "users_viewer",
         "default-roles-poc-daeauth"
       ],
       "clientRoles": {
+        "realm-management": [
+          "realm-admin"
+        ],
         "resource-server": [
           "uma_protection"
         ]
@@ -676,7 +689,9 @@
       "publicClient": true,
       "frontchannelLogout": false,
       "protocol": "openid-connect",
-      "attributes": {},
+      "attributes": {
+        "post.logout.redirect.uris": "+"
+      },
       "authenticationFlowBindingOverrides": {},
       "fullScopeAllowed": false,
       "nodeReRegistrationTimeout": 0,
@@ -714,7 +729,9 @@
       "publicClient": false,
       "frontchannelLogout": false,
       "protocol": "openid-connect",
-      "attributes": {},
+      "attributes": {
+        "post.logout.redirect.uris": "+"
+      },
       "authenticationFlowBindingOverrides": {},
       "fullScopeAllowed": false,
       "nodeReRegistrationTimeout": 0,
@@ -765,7 +782,7 @@
       "protocol": "openid-connect",
       "attributes": {
         "oidc.ciba.grant.enabled": "false",
-        "client.secret.creation.time": "1711012569",
+        "client.secret.creation.time": "1715008491",
         "backchannel.logout.session.required": "true",
         "post.logout.redirect.uris": "http://localhost:3000/##http://localhost:3000/*",
         "oauth2.device.authorization.grant.enabled": "false",
@@ -784,6 +801,7 @@
           "config": {
             "user.session.note": "clientHost",
             "introspection.token.claim": "true",
+            "userinfo.token.claim": "true",
             "id.token.claim": "true",
             "access.token.claim": "true",
             "claim.name": "clientHost",
@@ -799,6 +817,7 @@
           "config": {
             "user.session.note": "clientAddress",
             "introspection.token.claim": "true",
+            "userinfo.token.claim": "true",
             "id.token.claim": "true",
             "access.token.claim": "true",
             "claim.name": "clientAddress",
@@ -831,6 +850,7 @@
           "config": {
             "user.session.note": "client_id",
             "introspection.token.claim": "true",
+            "userinfo.token.claim": "true",
             "id.token.claim": "true",
             "access.token.claim": "true",
             "claim.name": "client_id",
@@ -942,7 +962,9 @@
       "publicClient": false,
       "frontchannelLogout": false,
       "protocol": "openid-connect",
-      "attributes": {},
+      "attributes": {
+        "post.logout.redirect.uris": "+"
+      },
       "authenticationFlowBindingOverrides": {},
       "fullScopeAllowed": false,
       "nodeReRegistrationTimeout": 0,
@@ -993,7 +1015,7 @@
       "protocol": "openid-connect",
       "attributes": {
         "oidc.ciba.grant.enabled": "false",
-        "client.secret.creation.time": "1711012137",
+        "client.secret.creation.time": "1715008514",
         "backchannel.logout.session.required": "true",
         "post.logout.redirect.uris": "http://localhost:3000##http://localhost:3000/*",
         "display.on.consent.screen": "false",
@@ -1029,13 +1051,14 @@
           "protocolMapper": "oidc-usermodel-attribute-mapper",
           "consentRequired": false,
           "config": {
+            "aggregate.attrs": "false",
             "introspection.token.claim": "true",
             "userinfo.token.claim": "true",
             "multivalued": "true",
-            "user.attribute": "paths.scopes.update",
+            "user.attribute": "paths.scopes.listUsers",
             "id.token.claim": "true",
             "access.token.claim": "true",
-            "claim.name": "paths\\.scopes\\.update",
+            "claim.name": "paths\\.scopes\\.listUsers",
             "jsonType.label": "String"
           }
         },
@@ -1065,6 +1088,7 @@
           "config": {
             "user.session.note": "clientAddress",
             "introspection.token.claim": "true",
+            "userinfo.token.claim": "true",
             "id.token.claim": "true",
             "access.token.claim": "true",
             "claim.name": "clientAddress",
@@ -1080,6 +1104,7 @@
           "config": {
             "user.session.note": "clientHost",
             "introspection.token.claim": "true",
+            "userinfo.token.claim": "true",
             "id.token.claim": "true",
             "access.token.claim": "true",
             "claim.name": "clientHost",
@@ -1113,6 +1138,7 @@
           "config": {
             "user.session.note": "client_id",
             "introspection.token.claim": "true",
+            "userinfo.token.claim": "true",
             "id.token.claim": "true",
             "access.token.claim": "true",
             "claim.name": "client_id",
@@ -1156,7 +1182,16 @@
                 "name": "read"
               },
               {
+                "name": "listUsers"
+              },
+              {
+                "name": "addUserPermission"
+              },
+              {
                 "name": "update"
+              },
+              {
+                "name": "manage.permissions.role.iotmanager"
               },
               {
                 "name": "delete"
@@ -1181,9 +1216,6 @@
               ],
               "iotmanager": [
                 "read"
-              ],
-              "parentId": [
-                null
               ]
             },
             "_id": "33f826d9-3cb4-4d38-add9-ceb6fd10f677",
@@ -1195,7 +1227,16 @@
                 "name": "read"
               },
               {
+                "name": "listUsers"
+              },
+              {
+                "name": "addUserPermission"
+              },
+              {
                 "name": "update"
+              },
+              {
+                "name": "manage.permissions.role.iotmanager"
               },
               {
                 "name": "delete"
@@ -1203,7 +1244,8 @@
               {
                 "name": "create"
               }
-            ]
+            ],
+            "icon_uri": ""
           },
           {
             "name": "Tenant2",
@@ -1219,9 +1261,6 @@
               ],
               "iotmanager": [
                 "read"
-              ],
-              "parentId": [
-                null
               ]
             },
             "_id": "edcb0c06-50cc-4602-8a83-a18db3d99f6a",
@@ -1233,7 +1272,16 @@
                 "name": "read"
               },
               {
+                "name": "listUsers"
+              },
+              {
+                "name": "addUserPermission"
+              },
+              {
                 "name": "update"
+              },
+              {
+                "name": "manage.permissions.role.iotmanager"
               },
               {
                 "name": "delete"
@@ -1241,7 +1289,8 @@
               {
                 "name": "create"
               }
-            ]
+            ],
+            "icon_uri": ""
           },
           {
             "name": "AssetGroup343",
@@ -1271,7 +1320,16 @@
                 "name": "read"
               },
               {
+                "name": "listUsers"
+              },
+              {
+                "name": "addUserPermission"
+              },
+              {
                 "name": "update"
+              },
+              {
+                "name": "manage.permissions.role.iotmanager"
               },
               {
                 "name": "delete"
@@ -1279,10 +1337,69 @@
               {
                 "name": "create"
               }
-            ]
+            ],
+            "icon_uri": ""
           }
         ],
-        "policies": [],
+        "policies": [
+          {
+            "id": "7996e833-dae0-441a-8a48-f46c52c9fb30",
+            "name": "dae-auth",
+            "description": "",
+            "type": "script-out.js",
+            "logic": "POSITIVE",
+            "decisionStrategy": "UNANIMOUS",
+            "config": {}
+          },
+          {
+            "id": "b6bfcb98-6f89-4588-8d50-e3a07bcca5d5",
+            "name": "Root_Permission",
+            "description": "",
+            "type": "resource",
+            "logic": "POSITIVE",
+            "decisionStrategy": "UNANIMOUS",
+            "config": {
+              "defaultResourceType": "Root",
+              "applyPolicies": "[\"dae-auth\"]"
+            }
+          },
+          {
+            "id": "790a7a8c-46fb-48ab-8bec-2b039eb9f7ab",
+            "name": "Tenant_Permission",
+            "description": "",
+            "type": "resource",
+            "logic": "POSITIVE",
+            "decisionStrategy": "UNANIMOUS",
+            "config": {
+              "defaultResourceType": "Tenant",
+              "applyPolicies": "[\"dae-auth\"]"
+            }
+          },
+          {
+            "id": "e47e47df-b4b5-4265-aebc-81213b41499d",
+            "name": "AssetGroup_Permission",
+            "description": "",
+            "type": "resource",
+            "logic": "POSITIVE",
+            "decisionStrategy": "UNANIMOUS",
+            "config": {
+              "defaultResourceType": "AssetGroup",
+              "applyPolicies": "[\"dae-auth\"]"
+            }
+          },
+          {
+            "id": "be9a2b83-ec93-4b0c-a3e1-e553aa9ed69e",
+            "name": "Device_Permission",
+            "description": "",
+            "type": "resource",
+            "logic": "POSITIVE",
+            "decisionStrategy": "UNANIMOUS",
+            "config": {
+              "defaultResourceType": "Device",
+              "applyPolicies": "[\"dae-auth\"]"
+            }
+          }
+        ],
         "scopes": [
           {
             "id": "c91a9150-3664-436b-88fa-6b3ea25e50d5",
@@ -1302,6 +1419,21 @@
           {
             "id": "1560a1b9-0f1d-4ca3-8bb9-1789af72f74a",
             "name": "create",
+            "iconUri": ""
+          },
+          {
+            "id": "7139e27b-92b1-405e-a671-86ee7f97e1b3",
+            "name": "listUsers",
+            "iconUri": ""
+          },
+          {
+            "id": "fc359be9-5a63-49c9-aa89-f7646f749a88",
+            "name": "addUserPermission",
+            "iconUri": ""
+          },
+          {
+            "id": "f5a82dfe-536a-48ce-86c4-be49ac66548f",
+            "name": "manage.permissions.role.iotmanager",
             "iconUri": ""
           }
         ],
@@ -1673,7 +1805,8 @@
           "config": {
             "id.token.claim": "true",
             "introspection.token.claim": "true",
-            "access.token.claim": "true"
+            "access.token.claim": "true",
+            "userinfo.token.claim": "true"
           }
         }
       ]
@@ -1745,6 +1878,7 @@
           "config": {
             "introspection.token.claim": "true",
             "multivalued": "true",
+            "userinfo.token.claim": "true",
             "user.attribute": "foo",
             "id.token.claim": "true",
             "access.token.claim": "true",
@@ -1988,13 +2122,13 @@
         "subComponents": {},
         "config": {
           "allowed-protocol-mapper-types": [
-            "saml-user-property-mapper",
-            "saml-role-list-mapper",
-            "oidc-address-mapper",
+            "oidc-usermodel-attribute-mapper",
             "saml-user-attribute-mapper",
             "oidc-sha256-pairwise-sub-mapper",
-            "oidc-usermodel-attribute-mapper",
             "oidc-full-name-mapper",
+            "saml-role-list-mapper",
+            "saml-user-property-mapper",
+            "oidc-address-mapper",
             "oidc-usermodel-property-mapper"
           ]
         }
@@ -2020,13 +2154,13 @@
         "config": {
           "allowed-protocol-mapper-types": [
             "oidc-usermodel-attribute-mapper",
-            "saml-user-property-mapper",
-            "saml-role-list-mapper",
-            "saml-user-attribute-mapper",
-            "oidc-sha256-pairwise-sub-mapper",
             "oidc-usermodel-property-mapper",
+            "oidc-sha256-pairwise-sub-mapper",
+            "saml-role-list-mapper",
+            "oidc-full-name-mapper",
             "oidc-address-mapper",
-            "oidc-full-name-mapper"
+            "saml-user-property-mapper",
+            "saml-user-attribute-mapper"
           ]
         }
       },
@@ -2736,8 +2870,8 @@
     "cibaExpiresIn": "120",
     "cibaAuthRequestedUserHint": "login_hint",
     "oauth2DeviceCodeLifespan": "600",
-    "oauth2DevicePollingInterval": "5",
     "clientOfflineSessionMaxLifespan": "0",
+    "oauth2DevicePollingInterval": "5",
     "clientSessionIdleTimeout": "0",
     "parRequestUriLifespan": "60",
     "clientSessionMaxLifespan": "0",
